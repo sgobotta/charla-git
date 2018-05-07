@@ -4,9 +4,7 @@
 
 Somos varios en un proyecto, o trabajo práctico:  
 ¿Cómo compartimos nuestro código con unx compañerx?  
-¿Cómo hacemos para poder trabajar al mismo tiempo? No siempre queremos esperar
-que nuestrx compañerx termine una actualización para nosotrxs continuar
-trabajando.  
+¿Cómo hacemos para poder trabajar al mismo tiempo? No siempre queremos esperar que nuestrx compañerx termine una actualización para poder continuar trabajando.  
 ¿Cómo sabemos cuándo y sobre qué estuvo trabajando otrx compañerx?
 
 Git es un protocolo que nos permite versionar código, de manera tal que podamos:
@@ -157,6 +155,16 @@ Changes not staged for commit:
 	modified:   <nombre de archivo modificado>
 
 no changes added to commit (use "git add" and/or "git commit -a")
+```
+
+También podemos obtener un listado con todas las ramas y aquella en la que estamos parados actualmente:
+
+```bash
+  git branch
+```
+Output:
+```bash
+  * master
 ```
 
 #### Obtener cambios
