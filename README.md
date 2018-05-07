@@ -46,7 +46,7 @@ Supongamos que ya escribimos nuestra primer Clase, sabemos que funciona y querem
 Pensemos en un **commit** como el contenido de los cambios que realizamos. El **commit** puede estar compuesto por el contenido de uno o varios archivos.
 Al hacer **push** del repositorio local al repositrio remoto, lo que subimos es uno o varios **commit**.
 
-### Estructura de los Repositorios
+### Estructura de los Repositorios I
 
 #### Commit
 
@@ -226,7 +226,7 @@ Idealmente, **NUNCA NADIE** realiza un **push** a la rama **master**. Recordemos
 + Realizar un push de los commit al repositorio remoto
 + Mezclar los cambios con la rama principal (master)
 
-para crear una branch nos conviene tener un repositorio actualizado y limpio de la rama principal, para ello realizamos un **pull**. Debemos estar *parados* sobre la rama **master** y ejecutar:
+Para crear una branch nos conviene tener un repositorio actualizado y limpio de la rama principal, para ello realizamos un **pull**. Debemos estar *parados* sobre la rama **master** y ejecutar:
 
 ```bash
   git pull origin master
@@ -244,7 +244,7 @@ Nos aparecerá el siguiente mensaje:
 ```
 
 A partir de ahora podemos trabajar como describimos anteriormente. Modificamos un archivo, lo agregamos utilizando ***git add***, y realizamos un commit local con ***git commit -m "descripción de la tarea realizada"***. Tengamos en cuenta que para realizar un commit **no** es necesario haber realizado la tarea en su **totalidad**.
-Los **commit** deben ser descriptivos y simples, solamente la práctica contínua nos ayuda a definir qué es simple y qué no. Por lo tanto no resultaría ridículo realizar un **commit** de una Clase que aún no *haga nada*. El siguiente **commit** podría estar contenido por modificaciones a esa clase que representen un nuevo método, getters y setters y su respectivo test.
+Los **commit** deben ser descriptivos y simples, pero solamente la práctica contínua nos ayuda a definir qué es simple y qué no. Por lo tanto no resultaría ridículo realizar un **commit** de una Clase que aún no *haga nada*. El siguiente **commit** podría estar contenido por modificaciones a esa clase que representen un nuevo método, getters y setters y su respectivo test.
 
 *(No está mal realizar varios commit de un mismo archivo modificado varias veces, de eśta manera es fácil observar el desarrollo y crecimiento del código fuente. Por el contrario, resulta tedioso observar un commit compuesto de mas de 50, 100 o más líneas).*
 
@@ -252,7 +252,7 @@ En pocas palabras, cuando sabemos que hemos escrito una porción de código que 
 
 Ahora ya tenemos nuestros commit realizados en la rama local que elegimos, queremos subirlos al repositorio remoto. Lo haremos de la misma manera que lo hicimos antes, pero apuntando a la nueva rama en el comando a git.
 
-*Si elegimos user-model-creation escribimos:*
+*Si elegimos para la nueva branch el nombre 'user-model-creation', escribimos:*
 ```bash
   git push origin user-model-creation
 ```
@@ -271,6 +271,8 @@ Deberíamos recibir un output parecido a esto:
 
 ```
 Lo que nos dice es que la branch local ***user-model-creation*** ahora fue copiada al repositorio remoto con el nombre ***user-model-creation***
+
+*Nota: es posible hacer push de ramas donde aún no se han realizado commits. La rama existirá también en el repositorio remoto, aunque estará vacía. El procedimiento es 'git checkout -b < nombreBranch >' y luego 'git push origin <nombreBranch>'*
 
 El siguiente paso debería ser mezclar los commit realizados en la nueva rama con la rama principal (master).
 Como ya dije, en git existen varias maneras de hacer lo mismo. Podríamos hacerlo desde la terminal, pero por una cuestión de simplicidad y practicidad vamos a utilizar un método que se utiliza muchísimo y es bastante sencillo.
@@ -304,3 +306,31 @@ Ahora estamos *parados* en la rama principal. Para obtener los cambios realizamo
 Es importante tener el repositorio actualizado en la rama principal, por eso es indispensable comunicar a los demás usuarios del repositorio que hemos realizado cambios. No todos estan todo el tiempo atentos  a los nuevos cambios que surgen en el repositorio, aunque deberían!
 
 Repasando, la próxima vez que necesitemos trabajar en una nueva funcionalidad lo conveniente es crear una nueva rama, las cuales deberían desprenderse de una rama principal, en nuestro ejemplo, la rama **master**. Por eso debemos estar actualizados localmente a los últimos cambios en el repositorio remoto.
+
+
+### Estructura de los Repositorios II
+
+#### gitignore
+
+En un directorio local que contiene un repositorio git podemos alojar archivos para sincronizarlos con el repositorio remoto. Existen casos en los que no es deseable compartir todos los archivos que existen en aquel directorio local. Por ejemplo, a veces alojamos archivos de configuración que usamos para correr nuestros programas de manera local, o archivos que contienen información sensible, como claves de APIs u otro tipo de datos de autenticación. Para poder administrar archivos y que git no los tenga en cuenta, podemos crear un archivo llamado **.gitignore**.
+Este tipo de archivo reconoce patrones en los nombres de los archivos. Si algun archivo dentro de nuestro directorio contiene un nombre parecido, no lo tendrá en cuenta al realizar **git status** y mucho menos podremos hacer **git add** sobre el.
+Cada patron, que representa el nombre de un archivo, se escribe línea por línea. También podemos escribir el nombre completo del archivo. Por ejemplo:
+
+*.gitignore*
+```
+  nombre-de-archivo
+  todos-los-archivos-de-este-directorio/*
+  el-arhivo-readme-de-este-directorio/README.md
+  *.json #Todos los archivos .json del repositorio
+  #un comentario
+```
+
+Los archivos comentados no serán tenidos en cuenta.
+También podemos usar operadores lógicos dentro de .gitignore, por ejemplo:
+
+*.gitignore*
+```
+  !config.json
+```
+El archivo config.json **no** será ignorado.
+
