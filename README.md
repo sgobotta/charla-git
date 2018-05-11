@@ -7,13 +7,12 @@ Somos varios en un proyecto, o trabajo práctico:
 ¿Cómo hacemos para poder trabajar al mismo tiempo? No siempre queremos esperar que nuestrx compañerx termine una actualización para poder continuar trabajando.  
 ¿Cómo sabemos cuándo y sobre qué estuvo trabajando otrx compañerx?
 
-Git es un protocolo que nos permite versionar código, de manera tal que podamos:
+Git es un programa que nos permite versionar código, de manera tal que podamos:
 + juntar nuestro propio código con el de otrx
-+ volver a tener versiones anteriores de nuestros archivos
++ volver a versiones anteriores de nuestros archivos
 + poder administrar todo aquel código que sabemos que funciona como esperamos
 que funcione
-+ poder desarrollar nuevas características sin modificar aquellas partes del
-código que ya sabemos cómo funcionan
++ flexibilizar el trabajo en paralelo entre integrantes para el desarrollo de nuevas características.
 
 ### Conceptos básicos a saber
 
@@ -39,6 +38,7 @@ y nos dice que hizo **push** al repositorio remoto. Lo que posiblemente
 querramos hacer es traernos sus cambios a nuestro repositorio local. En Git lo llamamos **pull** de un repositorio.
 Cada vez que hacemos **pull** del repositorio remoto obtendremos todos los
 cambios que **no** tengamos en nuestro repositorio.
+
 
 #### ¿Cómo se gestionan los cambios en Git? (commit)
 Supongamos que ya escribimos nuestra primer Clase, sabemos que funciona y queremos guardar el gran trabajo que hicimos. Lo que queremos hacer es un **commit** de nuestro código. Estamos guardando nuestros cambios en el repositorio **local**, o sea que no estamos afectando el trabajo de otrxs. Asimismo, los otrxs no saben en qué estuvimos trabajando.
@@ -203,6 +203,26 @@ Luego de haber agregados los archivos con ***git add*** procedemos a realizar un
 ```
 El commit se realizará sobre la **branch** local en la que estamos parados actualmente.
 
+Si ingresamos el siguiente comando podremos ver el último commit que hemos hecho en la **branch** local.
+
+```bash
+  git show
+```
+Obtendremos los detalles del último commit.
+
+```bash
+  commit 7cb50a28b65449baf2c720bb4ba60f12a375f72c
+  Author: Santiago <sgobotta@gmail.com>
+  Date:   Thu May 10 13:22:31 2018 -0300
+
+      El mensaje que escribimos en el commit
+```
+
+También podemos obtener una lista con todos los commit:
+
+```bash
+  git log
+```
 
 #### Subir los cambios al repositorio remoto
 
@@ -217,9 +237,147 @@ Debemos ingresar mail y password que git utilizará para validar el acceso al re
 
 Una vez realizado con éxito podremos ver nuestros **commit** en el historial de la web que hayamos elegido para gestionar nuestro repositorio.
 
+#### Mezclar cambios (merge)
+
+***¿Qué sucede si yo estuve realizando commits mientras mi compañerx publica cambios?***
+
+Supongamos que estamos parados en la rama **master**. Unx compañerx realizó un **push** y nosotrxs tenemos **commits** en el repositorio local, que aún no hemos *pusheado* al repositorio remoto.
+
+Si nos disponemos a hacer **push** vamos a obtener un mensaje parecido a este:
+```bash
+  To https://github.com/miUsuario/nombreDelRepo.git
+  ! [rejected]        master -> master (fetch first)
+  error: failed to push some refs to 'https://github.com/miUsuario/nombreDelRepo.git'
+  hint: Updates were rejected because the remote contains work that you do
+  hint: not have locally. This is usually caused by another repository pushing
+  hint: to the same ref. You may want to first integrate the remote changes
+  hint: (e.g., 'git pull ...') before pushing again.
+  hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+```
+
+Aprender a leer los logs es importante para entender **cómo** encarar la resolución de un problema. Vayamos paso por paso:
+
+Primero nos dice que falló en ejecutar el programa **push** a la url de nuestro repositorio.
+
+Luego recibimos un posible caso de lo que podría estar sucediendo. *Las actualizaciones fueron rechazadas porque el repositorio remoto contiene trabajo que nosotrxs no tenemos localmente*.
+
+¡Está clarísimo! Git no nos va a permitir hacer **push** si no tenemos el repositorio local sincronizado con el remoto. En nuestro caso, no tenemos los cambios que realizó nuestrx compañerx hace instantes.
+
+Nosotrxs ya sabemos como actualizarlo pero, ¿qué sucede cuando hacemos **git pull origin master** luego de haber realizado **commits** mientras estábamos parados en master tambien?
+
+Dado que ahora sabemos que existen **commits** locales sin *commitear*, en la rama master, y que en el respotorio remoto hay otros **commits** que nosotros no tenemos localmente, deberíamos actualizar el repositorio para mezclar nuestrxs commits con los que están en el repositorio remoto.
+
+A partir de aquí podemos encontrarnos en dos situaciones muy distintas, comparando el contenido de los commits locales y remotos:
+
+1. el contenido de nuestros **commit** locales no tiene nada que ver con el contenido de los commits remotos que aún debemos actualizar.
+2. el contenido de los **commit** locales modificó parte del contenido que ha sido publicado en los **commit** del repositorio remoto
+
+
+
+1 . Si nos encontramos en el primer paso significa que nosotros hicimos **commit** de archivos distintos a los que están en los commit pendientes de **pull**, o bien podríamos haber modificado un mismo archivo que está pendiente de **pull**, pero no las líneas exactas que nuestrx compañerx publicó.
+En ése caso procedemos a hacer **pull**. Se producirá un **merge** automáticamente, se mezclarán las actualizaciones de los **commit** que nos traemos remotamente con los **commit** locales.
+
+```bash
+  git pull origin master
+```
+Un merge no es más que un commit, con un mensaje, y un contenido. Con la diferencia que en vez de que nosotrxs tengamos que hacer **git add <nombreArchivo>**, git define el contenido, y los archivos que afectan al commit, automáticamente. Git nos pedirá que escribamos un mensaje de **merge** y aceptemos.
+
+*En los usuarios Linux se va a desplegar el programa **nano** en la terminal, escriben el mensaje y al finalizar utilizan el atajo Ctrl+X para guardar y cerrar)*
+
+El output es parecido a esto:
+
+```bash
+  remote: Counting objects: 3, done.
+  remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+  Unpacking objects: 100% (3/3), done.
+  From https://github.com/miUsuario/nombreDelRepo
+  * branch            master     -> FETCH_HEAD
+  * [new branch]      master     -> origin/master
+  Merge made by the 'recursive' strategy.
+  bubble-sort.hs | 1 +
+  1 file changed, 1 insertion(+)
+  create mode 100644 bubble-sort.hs
+
+```
+
+Recordemos que el comando ***git show*** nos muestra el último commit. Si lo ejecutamos podremos ver que se produjo un **commit** automáticamente, con el contenido que represente el **merge**.
+
+```bash
+  commit b916de28b5deccce17da5aa729e531b80b5bde0c
+  Author: Santiago <sgobotta@gmail.com>
+  Date:   Thu May 10 16:43:52 2018 -0300
+
+      Se agregó el algoritmo para el árbol.
+```
+
+Ahora sí podremos publicar los cambios con **git push**.
+
+```bash
+  Counting objects: 5, done.
+  Delta compression using up to 4 threads.
+  Compressing objects: 100% (4/4), done.
+  Writing objects: 100% (5/5), 510 bytes | 0 bytes/s, done.
+  Total 5 (delta 0), reused 0 (delta 0)
+  To https://github.com/miUsuario/nombreDelRepo.git
+    5174708..7cb50a2  master -> master
+```
+
+2 . El otro caso tiene en cuenta la situación en la que alguien publicó un contenido y nosotrxs hemos estado editando el mismo contenido en el repositorio local.
+
+Cuando querramos publicar los **commit** y luego pushear, sucederá lo mismo que en el caso anterior: debemos traernos los cambios. La diferencia es que como se han realizado modificaciones en las mismas líneas (ésto es el contenido) de un mismo archivo, el **merge** automático fallará.
+
+Luego de realizar **git pull origin master** obtendremos algo de éste estilo:
+
+```bash
+remote: Counting objects: 3, done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), done.
+From https://github.com/miUsuario/nombreDelRepo
+ * branch            master     -> FETCH_HEAD
+   7cb50a2..035a371  master     -> origin/master
+Auto-merging nombreDelArchivoComitteado
+CONFLICT (content): Merge conflict in nombreDelArchivoComitteado
+Automatic merge failed; fix conflicts and then commit the result.
+```
+A ésta altura git no sabe qué debe ser integrado en el repositorio luego del pull, ya que los dos archivos poseen distinto contenido en la misma línea, es por eso que falló el **merge** automático. La mezcla de contenido se realizó de forma parcial: en lugar de reemplazar contenido y perder información (o implementaciones, si hablamos de código) nos ofrece la chance de elegir qué ha de ser *commiteado* en el **merge**.
+
+Decimos que el merge fue parcial porque ciertos segmentos del contenido están en conflicto. Si observamos el archivo nos daremos cuenta que git conservó el contenido que queremos publicar nosotros y el que ya estaba publicado cuando decidimos hacer **git pull**.
+
+Aquel contenido en conflicto que pertenece al **commit** que realizamos nosotrxs localmente está encerrado entre símbolos **<** con el tag **HEAD**, mientras que el contenido en conflicto traído del repositorio remoto está encerrado entre símbolos **>** con el hash del **commit** al que pertenece (el hash es un identificador del commit en el que ése contenido fue añadido).
+
+```bash
+  <<<<<<< HEAD
+  class Employee extends User //contenido que agregamos nosotrxs
+  =======
+  class Employee //contenido que nos trajimos del repositorio remoto
+  >>>>>>> 035a3718cf101867cc0a0617b50d23f68dd77f11
+```
+
+Lo que debemos hacer es eliminar todos los símbolos (<, >, =), los tags, y editar el resto del contenido. Si queremos podemos agregar más contenido, o borrarlo, lo que estamos queriendo hacer no es mas que un commit como cualquier otro, solo que git no nos dejará hacer **push** de eśte archivo mientras se encuentre en conflicto (es decir, mientras tenga los símbolos y tags).
+
+Cuando hemos finalizado la edición, procedemos a añadirlo al workspace:
+
+```bash
+  git add nombreDelArchivo
+```
+
+Escribimos el commit, idealmente con un comentario que haga referencia a la resolución de tal conflicto.
+
+```bash
+  git commit -m "Conflicts solved in nombreDeArchivo.js"
+```
+
+Ahora sí podemos publicar los cambios en el repo remoto.
+
+```bash
+  git push origin master
+```
+
 #### Trabajando en diferentes ramas (branching)
 
-Idealmente, **NUNCA NADIE** realiza un **push** a la rama **master**. Recordemos que aquella rama es la que contiene el código fuente importante, la última versión estable por decirlo de una manera muy burda. Para poder trabajar de manera ordenada elegimos separar nuestro trabajo en distintas ramas. El proceso es más simple de lo que creemos. En un principio lo que queremos lograr es:
+Olvidémonos de todo lo que aprendimos :)
+Salvo casos particulares (no entraremos en detalles ahora), idealmente **NUNCA NADIE** realiza un **push** a la rama **master**. Recordemos que aquella rama es la que contiene el código fuente importante, la última versión estable por decirlo de una manera muy burda. Para poder trabajar de manera ordenada elegimos separar nuestro trabajo en distintas ramas. El proceso es más simple de lo que creemos. En un principio lo que queremos lograr es:
 + Crear una nueva rama a partir de la rama master
 + Realizar modificaciones sobre ésta copia (rama) que se desprendió de la rama master.
 + Realizar commits locales sobre ésta nueva rama
